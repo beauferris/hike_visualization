@@ -1,0 +1,18 @@
+svg {
+    height: 800px;
+    width: 800px;
+  }
+
+  .active{fill: #f29929;}
+
+  .highlight
+	{fill: #fec44f;
+}
+  .g0-8 { fill:rgb(229,245,224); }
+  .g1-8 { fill:rgb(199,233,192); }
+  .g2-8 { fill:rgb(161,217,155); }
+  .g3-8 { fill:rgb(116,196,118); }
+  .g4-8 { fill:rgb(65,171,93); }
+  .g5-8 { fill:rgb(35,139,69); }
+  .g6-8 { fill:rgb(0,109,44); }
+  .g7-8 { fill:rgb(0,68,27); }
