@@ -2,17 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Calgary Crime</title>
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='/css/tutorial5.css')}}" />
+    <title>My Hikes</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}" />
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://d3js.org/d3-queue.v3.min.js"></script>
     <script type="text/javascript" src="{{url_for('static', filename='app.js')}}" defer></script>
 </head>
 <body>
-   <table> <tr>
-        <td><div id="map_container" > </div></td>
-        <td><div id="legend_container" > </div></td>
-    </tr> 
-   </table>
+    <table>
+         <tr>
+            <td><div id="my_dataviz"></div></td>
+            <td><div id="legend_container" >
+                <input type="checkbox" class="checkbox" value="jura" checked><label>Jura</label>
+                <input type="checkbox" class="checkbox" value="yamnuska" checked><label>Yamnuska</label>    
+            </div></td>
+
+        </tr>
+        
+        
 </body>
 </html>
