@@ -97,7 +97,9 @@ d3.csv("/static/csv/"+file).then(function(data) {
         if(cb.property("checked")){
           // svg.select('.'+grp).each(function(d,i){
           //   if(d3.select(this).attr("opacity")==0){
-            
+
+            svg.selectAll('text')
+              .remove() 
 
               svg.selectAll("."+grp)
               svg.select("."+grp).style('opacity',1)
