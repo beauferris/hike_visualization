@@ -12,41 +12,36 @@ var svg = d3.select("#my_dataviz")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-// var grid = d3.select("#legend_container")
-//     .append('div')
-//     .attr('class','grid')
-
 var buttons = d3.select("#legend_container")
     .append('div')
     .attr('class','buttons')
 
 
-const tooltip = d3
-  .select('#my_dataviz')
-  .append('div')
-  .attr('id','tooltip')
-  .style('position', 'absolute')
-  .style("background-color", "white")
-  .style('padding', '5px')
-  .style('display', 'none')
-  .style('opacity',0)
-  .style('border-style','solid')
-  .style('border-color','grey')
-  .style('border-width','1px');       
+// const tooltip = d3
+//   .select('#my_dataviz')
+//   .append('div')
+//   .attr('id','tooltip')
+//   .style('position', 'absolute')
+//   .style("background-color", "white")
+//   .style('padding', '5px')
+//   .style('display', 'none')
+//   .style('opacity',0)
+//   .style('border-style','solid')
+//   .style('border-color','grey')
+//   .style('border-width','1px');       
 
 //addline("barrier_lake.csv")
 //addline("yamnuska.csv")
 //addline("jura_creek.csv")
+
 addline("final.csv")
 
 function addline(file){
 d3.csv("/static/csv/"+file).then(function(data) {
-
-
+  //create nested data
   let nested = d3.nest()
       .key(d=>d.id)
       .entries(data)
-
 
   //nested = nested.filter( function(d){return d.key=="jura"} )
 
@@ -54,7 +49,8 @@ d3.csv("/static/csv/"+file).then(function(data) {
   let maxIndex = []
 
   nested.forEach(n=>{
-    maxArr.push(d3.max(d3.values(n)[1], d=>+d.elv))
+    max = d3.max(d3.values(n)[1], d=>+d.elv)
+    maxArr.push(max)
   })
 
   let final_peak = []
@@ -76,6 +72,7 @@ d3.csv("/static/csv/"+file).then(function(data) {
      }
   }
 
+  //create nested data for peak of each line
   let nested_peak = d3.nest()
       .key(d=>d.id)
       .entries(final_peak)
@@ -90,47 +87,42 @@ d3.csv("/static/csv/"+file).then(function(data) {
       .domain([1300,2000])
       .range([height, 0 ]);
   
-  // buttons.selectAll('input')
-  //   .data(nested)
-  //   .enter()
-  //   .append('label')
-  //     .text(d=>d.key)
-  //   .append('input')
-  //     .property('checked',false)
-  //     .attr("type", "checkbox")
-  
-   function update(){
+  function update(){
       // For each check box:
       d3.selectAll(".checkbox").each(function(d){
         cb = d3.select(this);
         grp = cb.property("value")
+      
         // If the box is check, I show the group
         if(cb.property("checked")){
-          svg.selectAll("."+grp).style('opacity',1)
+          // svg.select('.'+grp).each(function(d,i){
+          //   if(d3.select(this).attr("opacity")==0){
+            
+
+              svg.selectAll("."+grp)
+              svg.select("."+grp).style('opacity',1)
+              anime(grp)
+            // }
+          // })
         // Otherwise I hide it
         }else{
-          svg.selectAll("."+grp).style('opacity',0)
-        }
-      })
-    }
 
-   d3.selectAll(".checkbox").on("change",update);
+          svg.selectAll('text')
+            .remove() 
+
+          svg.selectAll("."+grp)
+            .transition()
+            .duration(1000)
+            .style('opacity',0)
   
-  // const list = grid
-  //     .selectAll('div')
-  //     .data(nested)
-  //     .enter()
-  //     .append('div')
-  //     .attr('class','s1')
+        }
+    })
+  }
 
-  // const content = list
-  //     .append('div')
-  //     .attr('class', 'content')
-      
-  // content
-  //     .append('text')
-  //     .text(d=>d.key)
+  d3.selectAll(".checkbox").on("change",update);
 
+  
+  //create grid in background
   const xGrid = d3.axisBottom()
       .scale(x)
       .tickFormat('')
@@ -164,12 +156,13 @@ d3.csv("/static/csv/"+file).then(function(data) {
     .attr("transform","translate(749)")
     .attr('opacity', 0.5)
     .call(rightGrid)
-  
-  var line = d3.line()
+    
+   
+////////////////////////////////////////////////////////////////////// 
+   const line = d3.line()
     .curve(d3.curveBasis)
     .x(d => x(d.distance))
     .y(d => y(d.elv))
-////////////////////////////////////////////////////////////////////// 
 
   //create line 2 peak 
   let peak_lines = svg.append('g')
@@ -195,7 +188,20 @@ d3.csv("/static/csv/"+file).then(function(data) {
       // console.log(peak_path.nodes()[1].getTotalLength())   
   
   nested.forEach((n,i)=>{
-    n['peak'] = peak_path.nodes()[i].getTotalLength()
+    p = peak_path.nodes()[i].getTotalLength()
+    n['peak'] = p
+    
+  
+    
+    if(n['key'] == 'jura'){
+      n['peaky'] = peak_path.nodes()[i].getPointAtLength(p).y+30
+      n['peakx'] = peak_path.nodes()[i].getPointAtLength(p).x-30
+    } else{
+      n['peaky'] = peak_path.nodes()[i].getPointAtLength(p).y
+      n['peakx'] = peak_path.nodes()[i].getPointAtLength(p).x
+    }
+    
+    n['max'] = Math.round(maxArr[i])
   })
 
   svg.selectAll('path').remove()
@@ -217,6 +223,7 @@ d3.csv("/static/csv/"+file).then(function(data) {
     .attr("stroke-width", 6)
     .attr("class",d=>d.key)
     .attr("fill", "none")
+    .attr('opacity',0)
     .attr("d", d=> line(d.values))
     
 
@@ -235,43 +242,45 @@ d3.csv("/static/csv/"+file).then(function(data) {
     .style("opacity", 1)
    
 
-  let mousePerLine = mouseG.selectAll('.mouse-per-line')
-    .data(nested)
-    .enter()
-    .append('g')
-    .attr('class', 'mouse-per-line')
+  // let mousePerLine = mouseG.selectAll('.mouse-per-line')
+  //   .data(nested)
+  //   .enter()
+  //   .append('g')
+  //   .attr('class', 'mouse-per-line')
 
-  mousePerLine.append('circle')
-    .attr('r', 4)
-    .style('opacity',0)
+  // mousePerLine.append('circle')
+  //   .attr('r', 4)
+  //   .style('opacity',0)
     
 
-  mouseG.append('rect')
-    .attr('width', width+margin.left)
-    .attr('height',height)
-    .attr('border-right', 1)
-    .style('opacity',0)
+  // mouseG.append('rect')
+  //   .attr('width', width+margin.left)
+  //   .attr('height',height)
+  //   .attr('border-right', 1)
+  //   .style('opacity',0)
 
-    .on('mouseover',()=>{
-      d3.select(".mouse-line")
-        .style("opacity", "1");
-      d3.selectAll(".mouse-per-line circle")
-        .style("opacity", "1");
-      // d3.selectAll("#tooltip")
-      //   .style('display', 'block')
-    })
-    .on('mouseout',()=>{
-      d3.select(".mouse-line")
-        .style("opacity", "0");
-      d3.selectAll(".mouse-per-line circle")
-        .style("opacity", "0");
-      tooltip
-        .style("opacity", "0")
-    })
-    .on('mousemove',mousemove)
+  //   .on('mouseover',()=>{
+  //     d3.select(".mouse-line")
+  //       .style("opacity", "1");
+  //     d3.selectAll(".mouse-per-line circle")
+  //       .style("opacity", "1");
+  //     // d3.selectAll("#tooltip")
+  //     //   .style('display', 'block')
+  //   })
+  //   .on('mouseout',()=>{
+  //     d3.select(".mouse-line")
+  //       .style("opacity", "0");
+  //     d3.selectAll(".mouse-per-line circle")
+  //       .style("opacity", "0");
+  //     // tooltip
+  //     //   .style("opacity", "0")
+  //   })
+  //   .on('mousemove',mousemove)
 
   function mousemove(event){
     let m = d3.mouse(this)
+
+    
       d3.selectAll('.mouse-per-line')
         .attr('transform', function (d,i) {
         
@@ -279,8 +288,7 @@ d3.csv("/static/csv/"+file).then(function(data) {
         let bisect = d3.bisector(d=> d.distance).left; 
         let x0 = bisect(d.values, xDistance);
         let d0 = d.values[x0];
-        
-        
+      
 
         d3.select(".mouse-line")
           .attr("d", function () {
@@ -297,7 +305,7 @@ d3.csv("/static/csv/"+file).then(function(data) {
         .style('font-size', "12px")
         .selectAll()
         .data(nested)
-        .enter() // for each vehicle category, list out name and price of premium
+        .enter() // for each category, list out name and price of premium
         .append('div')
         .style('font-size', "12px")
         .html(d => {
@@ -312,31 +320,41 @@ d3.csv("/static/csv/"+file).then(function(data) {
     
   }
 
-//   //get total length of full path
-//   // path = svg.selectAll("path") 
-//   // let peakLength = path.node().getTotalLength();  
-//   // let end_coord_x = path.node().getPointAtLength(peakLength).x
-//   // let end_coord_y = path.node().getPointAtLength(peakLength).y
+  // //get total length of full path
+  // path = svg.selectAll("path") 
+  // let peakLength = path.node().getTotalLength();  
 
-//   // let max_x = Math.round(d3.max(data,function(d) {return (d.distance)}))
-//   // let max_y = Math.round(d3.max(data,function(d) {return (d.elv)}))
+
+  // let max_x = Math.round(d3.max(data,function(d) {return (d.distance)}))
+  // let max_y = Math.round(d3.max(data,function(d) {return (d.elv)}))
+
 // //////////////////////////////////////////////////////////////////////
-let path = glines.selectAll("path")
-  //path animation      
-  const transitionPath = d3
-    .transition()
-    .ease(d3.easeSin)
-    .duration(3000)
-    
-  //animate path creation
-  glines.attr("stroke-dashoffset", d=>d.length)
-    .attr("stroke-dasharray", d=>d.length)
-    .transition(transitionPath)
-    .attr("stroke-dashoffset",function(d){
-          //console.log(d.key)
-          return  d.length - d.peak
-    })
-    .transition(transitionPath)
-    .attr("stroke-dashoffset",0)
+  console.log(nested)
+  function anime(hike){
+
+      let transition = 
+      d3.transition()
+      .ease(d3.easeSin)
+      .duration(3000)
+
+      glines.select('.'+hike)
+      .attr("stroke-dashoffset", d=>d.length)
+      .attr("stroke-dasharray", d=>d.length)
+      .transition(transition)
+      .on('end',d=>{
+        svg.append('text')
+        .attr('x', d.peakx)
+        .attr('y',d.peaky)
+        .text(d.max+"m")
+      })
+      .attr("stroke-dashoffset",function(d){
+            return  d.length - d.peak
+      })
+      .transition(transition)
+      .attr("stroke-dashoffset",0)
+     
+     
+    }
+    update()
 })
 }
