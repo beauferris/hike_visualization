@@ -12,9 +12,7 @@ var svg = d3.select("#my_dataviz")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-var buttons = d3.select("#legend_container")
-    .append('div')
-    .attr('class','buttons')
+
 
 
 // const tooltip = d3

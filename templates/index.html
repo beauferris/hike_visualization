@@ -9,17 +9,16 @@
     <script type="text/javascript" src="{{url_for('static', filename='app.js')}}" defer></script>
 </head>
 <body>
-    <table>
-         <tr>
-            <td><div id="my_dataviz"></div></td>
-            <td><div id="legend_container" >
+    <div class ="grid">
+
+    
+           <div  id="my_dataviz"> </div>
+           <div style="padding-top: 45px;" id="legend_container" >
                 <input type="checkbox" class="checkbox" value="yamnuska" checked><label>Yamnuska</label><br>
                 <input type="checkbox" class="checkbox" value="barrier" unchecked><label>Barrier Lake</label> <br>
                 <input type="checkbox" class="checkbox" value="jura" unchecked><label>Jura Creek</label><br>
-            </div></td>
-
-        </tr>
-        
+            </div>
+        </div>
         
 </body>
 </html>
