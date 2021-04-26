@@ -15,7 +15,7 @@ text.barrier_lake {stroke:black;}
 
 .grid { 
   display: grid;
-  grid-template-columns: 70% 30%;
+  grid-template-columns: 1fr 1fr;
  
 }
 
