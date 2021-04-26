@@ -204,6 +204,9 @@ d3.csv("/static/csv/"+file).then(function(data) {
     }
     
     n['max'] = Math.round(maxArr[i])
+
+    n['maxdistance'] = Math.round(d3.max(n.values,function(d) {return (d.distance)}))
+    console.log(n['maxdistance'])
   })
 
   svg.selectAll('path').remove()
@@ -333,6 +336,7 @@ d3.csv("/static/csv/"+file).then(function(data) {
 // //////////////////////////////////////////////////////////////////////
   console.log(nested)
   function anime(hike){
+    let path = d3.selectAll('.'+hike)
 
       let transition = 
       d3.transition()
@@ -353,6 +357,12 @@ d3.csv("/static/csv/"+file).then(function(data) {
             return  d.length - d.peak
       })
       .transition(transition)
+      .on('end',d=>{
+        svg.append('text')
+        .attr('x', path.node().getPointAtLength(d.length).x)
+        .attr('y', path.node().getPointAtLength(d.length).y)
+        .text(d.maxdistance+"km")
+      })
       .attr("stroke-dashoffset",0)
      
      
