@@ -12,9 +12,6 @@ var svg = d3.select("#my_dataviz")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-
-
-
 // const tooltip = d3
 //   .select('#my_dataviz')
 //   .append('div')
@@ -93,20 +90,11 @@ d3.csv("/static/csv/"+file).then(function(data) {
       
         // If the box is check, I show the group
         if(cb.property("checked")){
-          // svg.select('.'+grp).each(function(d,i){
-          //   if(d3.select(this).attr("opacity")==0){
-
-            svg.selectAll('text')
-              .remove() 
-
-              svg.selectAll("."+grp)
-              svg.select("."+grp).style('opacity',1)
-              anime(grp)
-            // }
-          // })
-        // Otherwise I hide it
+            svg.selectAll('text').remove() 
+            svg.selectAll("."+grp)
+            svg.select("."+grp).style('opacity',1)
+            anime(grp)
         }else{
-
           svg.selectAll('text')
             .remove() 
 
@@ -114,7 +102,6 @@ d3.csv("/static/csv/"+file).then(function(data) {
             .transition()
             .duration(1000)
             .style('opacity',0)
-  
         }
     })
   }
@@ -191,8 +178,6 @@ d3.csv("/static/csv/"+file).then(function(data) {
     p = peak_path.nodes()[i].getTotalLength()
     n['peak'] = p
     
-  
-    
     if(n['key'] == 'jura'){
       n['peaky'] = peak_path.nodes()[i].getPointAtLength(p).y+30
       n['peakx'] = peak_path.nodes()[i].getPointAtLength(p).x-30
@@ -218,7 +203,6 @@ d3.csv("/static/csv/"+file).then(function(data) {
     .enter()
     .append('g')
     .attr('class', 'line-group')
-
 
   //create full path
   glines.append("path")
